@@ -3,19 +3,25 @@ import {
   FileText,
   Search,
   Calendar,
-  ExternalLink,
-  Tag,
-  Clock,
-  Sparkles
+  ExternalLink
 } from 'lucide-react';
 import { newsService } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';
 import ErrorMessage from '../components/ErrorMessage';
 
-const CATEGORIES = ["All", "Government", "Weather", "Crop Alert", "Market", "Technology"];
+const CATEGORIES = [
+  { key: "All", en: "All", hi: "सभी", mr: "सर्व" },
+  { key: "Government", en: "Government", hi: "सरकारी नीतियां", mr: "शासकीय धोरणे" },
+  { key: "Weather", en: "Weather", hi: "मौसम चेतावनी", mr: "हवामान इशारा" },
+  { key: "Crop Alert", en: "Crop Alert", hi: "फसल एडवाइजरी", mr: "पीक सल्ला" },
+  { key: "Market", en: "Market", hi: "मंडी व एमएसपी", mr: "बाजार व हमीभाव" },
+  { key: "Technology", en: "Technology", hi: "कृषि तकनीक", mr: "कृषी तंत्रज्ञान" }
+];
 
 export const NewsPage = () => {
+  const { t, language } = useLanguage();
   const [news, setNews] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [search, setSearch] = useState('');
@@ -33,7 +39,7 @@ export const NewsPage = () => {
       setNews(res.data);
     } catch (err) {
       console.error("Failed to load news:", err);
-      setError("Unable to load agriculture news. Please try again.");
+      setError(language === 'hi' ? "कृषि समाचार लोड करने में असमर्थ। कृपया पुनः प्रयास करें।" : language === 'mr' ? "कृषी बातम्या लोड करण्यात अडचण आली. कृपया पुन्हा प्रयत्न करा." : "Unable to load agriculture news. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -55,13 +61,13 @@ export const NewsPage = () => {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-forest-700 text-xs font-bold uppercase tracking-wider">
             <FileText className="w-4 h-4" />
-            <span>National Agromet & Policy Bulletins</span>
+            <span>{language === 'hi' ? "राष्ट्रीय कृषि मौसम एवं नीति बुलेटिन" : language === 'mr' ? "राष्ट्रीय कृषी हवामान व धोरण बुलेटिन" : "National Agromet & Policy Bulletins"}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-gray-900">
-            Agriculture News & Alerts
+            {t.latestBulletins || "Agriculture News & Alerts"}
           </h1>
           <p className="text-sm text-gray-500 max-w-2xl">
-            Verified updates on MSP announcements, weather alerts, pest scouting reports, and market advisories.
+            {t.bulletinSubtitle || "Verified updates on MSP announcements, weather alerts, pest scouting reports, and market advisories."}
           </p>
         </div>
 
@@ -72,7 +78,7 @@ export const NewsPage = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search news & advisories..."
+            placeholder={language === 'hi' ? "समाचार या बुलेटिन खोजें..." : language === 'mr' ? "बातम्या किंवा बुलेटिन शोधा..." : "Search news & advisories..."}
             className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-forest-600"
           />
         </form>
@@ -80,18 +86,18 @@ export const NewsPage = () => {
 
       {/* Category Filter Chips */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-        <span className="text-xs font-bold text-gray-500 shrink-0">Category:</span>
+        <span className="text-xs font-bold text-gray-500 shrink-0">{t.category || "Category"}:</span>
         {CATEGORIES.map((cat) => (
           <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
+            key={cat.key}
+            onClick={() => setSelectedCategory(cat.key)}
             className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
-              selectedCategory === cat
+              selectedCategory === cat.key
                 ? 'bg-forest-700 text-white shadow-xs'
                 : 'bg-white text-gray-700 border border-gray-200 hover:bg-forest-50'
             }`}
           >
-            {cat}
+            {cat[language] || cat.en}
           </button>
         ))}
       </div>
@@ -103,9 +109,9 @@ export const NewsPage = () => {
         <LoadingSkeleton count={3} />
       ) : news.length === 0 ? (
         <EmptyState
-          title="No news articles found"
-          description="Try choosing a different category or clearing your search."
-          actionText="Reset Filter"
+          title={language === 'hi' ? "कोई समाचार नहीं मिला" : language === 'mr' ? "कोणतीही बातमी सापडली नाही" : "No news articles found"}
+          description={language === 'hi' ? "कृपया श्रेणी बदलें या खोज शब्द बदलें।" : language === 'mr' ? "कृपया वेगळा प्रवर्ग निवडा किंवा शोध बदला." : "Try choosing a different category or clearing your search."}
+          actionText={t.resetFilters || "Reset Filter"}
           onAction={() => {
             setSelectedCategory('All');
             setSearch('');
@@ -147,7 +153,7 @@ export const NewsPage = () => {
               </div>
 
               <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-                <span className="font-semibold">Source: {item.source}</span>
+                <span className="font-semibold">{language === 'hi' ? "स्रोत:" : language === 'mr' ? "स्रोत:" : "Source:"} {item.source}</span>
                 {item.source_url && (
                   <a
                     href={item.source_url}
@@ -155,7 +161,7 @@ export const NewsPage = () => {
                     rel="noreferrer"
                     className="text-forest-700 font-bold hover:underline flex items-center gap-1"
                   >
-                    <span>Read official</span>
+                    <span>{language === 'hi' ? "आधिकारिक पढ़ें" : language === 'mr' ? "अधिकृत वाचा" : "Read official"}</span>
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 )}

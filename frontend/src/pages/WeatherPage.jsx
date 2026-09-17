@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { weatherService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -41,6 +42,7 @@ const DISTRICTS = [
 
 export const WeatherPage = () => {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const [selectedDistrict, setSelectedDistrict] = useState(user?.district || 'Pune');
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -97,10 +99,10 @@ export const WeatherPage = () => {
         <div>
           <div className="flex items-center gap-2 text-forest-700 text-xs font-bold uppercase tracking-wider mb-1">
             <CloudSun className="w-4 h-4" />
-            <span>Agricultural Agromet Forecast</span>
+            <span>{t.agrometForecast}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-gray-900">
-            Weather & Spray Advisories
+            {t.weatherAdvisories}
           </h1>
         </div>
 
@@ -126,7 +128,7 @@ export const WeatherPage = () => {
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-forest-700 hover:bg-forest-800 disabled:opacity-60 text-white text-xs font-bold rounded-xl transition shadow-sm"
           >
             <Navigation className={`w-3.5 h-3.5 ${locating ? 'animate-spin' : ''}`} />
-            <span>{locating ? 'Detecting...' : 'Use My GPS'}</span>
+            <span>{locating ? t.detectingGps : t.useMyGps}</span>
           </button>
         </div>
       </div>
@@ -152,11 +154,11 @@ export const WeatherPage = () => {
                   <div className="text-6xl sm:text-7xl font-black">{weatherData.temperature}°C</div>
                   <div>
                     <div className="text-xl font-black text-emerald-300">{weatherData.condition}</div>
-                    <div className="text-xs font-semibold text-emerald-100">Feels like {weatherData.feels_like}°C</div>
+                    <div className="text-xs font-semibold text-emerald-100">{t.feelsLike} {weatherData.feels_like}°C</div>
                   </div>
                 </div>
                 <p className="text-xs font-medium text-emerald-100">
-                  Updated: Today, {weatherData.sunrise} (Sunrise) • {weatherData.sunset} (Sunset)
+                  {weatherData.sunrise} ({t.sunrise}) • {weatherData.sunset} ({t.sunset})
                 </p>
               </div>
 
@@ -164,26 +166,26 @@ export const WeatherPage = () => {
               <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="p-4 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 text-center">
                   <Droplets className="w-6 h-6 text-blue-300 mx-auto mb-2" />
-                  <span className="text-xs font-bold text-emerald-100 block">Humidity</span>
+                  <span className="text-xs font-bold text-emerald-100 block">{t.humidity}</span>
                   <span className="text-lg font-black text-white">{weatherData.humidity}%</span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 text-center">
                   <CloudRain className="w-6 h-6 text-emerald-300 mx-auto mb-2" />
-                  <span className="text-xs font-bold text-emerald-100 block">Rain Chance</span>
+                  <span className="text-xs font-bold text-emerald-100 block">{t.rainChance}</span>
                   <span className="text-lg font-black text-white">{weatherData.rain_probability}%</span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 text-center">
                   <Wind className="w-6 h-6 text-amber-300 mx-auto mb-2" />
-                  <span className="text-xs font-bold text-emerald-100 block">Wind Speed</span>
+                  <span className="text-xs font-bold text-emerald-100 block">{t.windSpeed}</span>
                   <span className="text-lg font-black text-white">{weatherData.wind_speed} km/h</span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 text-center">
                   <Sun className="w-6 h-6 text-yellow-300 mx-auto mb-2" />
-                  <span className="text-xs font-bold text-emerald-100 block">UV Index</span>
-                  <span className="text-lg font-black text-white">{weatherData.uv_index} (Mod)</span>
+                  <span className="text-xs font-bold text-emerald-100 block">{t.uvIndex}</span>
+                  <span className="text-lg font-black text-white">{weatherData.uv_index}</span>
                 </div>
               </div>
             </div>
@@ -193,7 +195,7 @@ export const WeatherPage = () => {
               <div className="mt-8 pt-6 border-t border-white/15 flex items-start gap-3 bg-white/10 p-4 rounded-2xl">
                 <AlertTriangle className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-sm text-amber-200">Field Operation Advisory</h4>
+                  <h4 className="font-bold text-sm text-amber-200">{t.fieldAdvisory}</h4>
                   <p className="text-xs text-white font-medium mt-0.5 leading-relaxed">
                     {weatherData.agricultural_alert}
                   </p>
@@ -207,7 +209,7 @@ export const WeatherPage = () => {
             <div className="p-6 rounded-3xl bg-white border border-gray-200 shadow-soft space-y-4">
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-forest-700" />
-                <h3 className="font-black text-gray-900 text-base">Hourly Trend (Next 16 Hours)</h3>
+                <h3 className="font-black text-gray-900 text-base">{t.hourlyTrend}</h3>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
@@ -219,7 +221,7 @@ export const WeatherPage = () => {
                     <span className="text-xs font-black text-gray-900">{h.time}</span>
                     <CloudSun className="w-6 h-6 text-forest-700" />
                     <span className="text-sm font-black text-gray-950">{h.temp}°C</span>
-                    <span className="text-xs text-blue-700 font-bold">{h.rain_probability}% Rain</span>
+                    <span className="text-xs text-blue-700 font-bold">{h.rain_probability}%</span>
                   </div>
                 ))}
               </div>
@@ -230,7 +232,7 @@ export const WeatherPage = () => {
           <div className="p-6 rounded-3xl bg-white border border-gray-200 shadow-soft space-y-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-forest-700" />
-              <h3 className="font-black text-gray-900 text-base">7-Day Extended Forecast</h3>
+              <h3 className="font-black text-gray-900 text-base">{t.extendedForecast7Day}</h3>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">

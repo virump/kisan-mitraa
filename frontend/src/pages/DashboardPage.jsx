@@ -6,15 +6,12 @@ import {
   TrendingUp,
   Award,
   Bot,
-  Layers,
   ShieldAlert,
   MapPin,
-  Bell,
   ArrowRight,
   RefreshCw,
   AlertTriangle,
-  FileText,
-  Calendar
+  FileText
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -24,7 +21,7 @@ import ErrorMessage from '../components/ErrorMessage';
 
 export const DashboardPage = () => {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [weather, setWeather] = useState(null);
   const [mandiPrices, setMandiPrices] = useState([]);
@@ -54,7 +51,7 @@ export const DashboardPage = () => {
       }
     } catch (err) {
       console.error("Failed to load dashboard:", err);
-      setError("Unable to load full dashboard data. Please try again.");
+      setError(language === 'hi' ? "डैशबोर्ड डेटा लोड करने में असमर्थ। कृपया पुनः प्रयास करें।" : language === 'mr' ? "डॅशबोर्ड माहिती लोड करण्यात अडचण आली. कृपया पुन्हा प्रयत्न करा." : "Unable to load full dashboard data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -65,12 +62,12 @@ export const DashboardPage = () => {
   }, [user]);
 
   const quickTools = [
-    { name: "Live Weather", icon: CloudSun, link: "/weather", color: "bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200" },
-    { name: "Crop Guide", icon: Sprout, link: "/crops", color: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200" },
-    { name: "Disease Diagnosis", icon: ShieldAlert, link: "/diseases", color: "bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200" },
-    { name: "Mandi Prices", icon: TrendingUp, link: "/market-prices", color: "bg-purple-50 text-purple-600 hover:bg-purple-100 border-purple-200" },
-    { name: "Govt Schemes", icon: Award, link: "/schemes", color: "bg-teal-50 text-teal-600 hover:bg-teal-100 border-teal-200" },
-    { name: "Kisan AI", icon: Bot, link: "/ai-assistant", color: "bg-green-600 text-white hover:bg-green-700 border-green-600 shadow-md" },
+    { name: t.navWeather || "Live Weather", icon: CloudSun, link: "/weather", color: "bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200" },
+    { name: t.navCrops || "Crop Guide", icon: Sprout, link: "/crops", color: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200" },
+    { name: t.navDiseases || "Disease Diagnosis", icon: ShieldAlert, link: "/diseases", color: "bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200" },
+    { name: t.navMarket || "Mandi Prices", icon: TrendingUp, link: "/market-prices", color: "bg-purple-50 text-purple-600 hover:bg-purple-100 border-purple-200" },
+    { name: t.navSchemes || "Govt Schemes", icon: Award, link: "/schemes", color: "bg-teal-50 text-teal-600 hover:bg-teal-100 border-teal-200" },
+    { name: t.navAIAssistant || "Kisan AI", icon: Bot, link: "/ai-assistant", color: "bg-green-600 text-white hover:bg-green-700 border-green-600 shadow-md" },
   ];
 
   if (loading) {
@@ -91,10 +88,14 @@ export const DashboardPage = () => {
             <span>{user?.district || 'Pune'}, {user?.state || 'Maharashtra'} {user?.village ? `• ${user.village}` : ''}</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-black">
-            Namaste, {user?.full_name || 'Farmer Friend'}! 🙏
+            {language === 'hi' ? `नमस्ते, ${user?.full_name || 'किसान भाई'}! 🙏` : language === 'mr' ? `नमस्कार, ${user?.full_name || 'शेतकरी बंधू'}! 🙏` : `Namaste, ${user?.full_name || 'Farmer Friend'}! 🙏`}
           </h1>
           <p className="text-forest-100 text-sm max-w-xl">
-            Here is your daily personalized farm advisory, live weather bulletin, and mandi rates for {user?.main_crop || 'your crops'}.
+            {language === 'hi'
+              ? `आपके क्षेत्र (${user?.district || 'पुणे'}) के लिए व्यक्तिगत कृषि सलाह, लाइव मौसम एवं आज के मंडी भाव।`
+              : language === 'mr'
+              ? `आपल्या परिसरासाठी (${user?.district || 'पुणे'}) वैयक्तिक कृषी सल्ला, थेट हवामान आणि आजचे बाजार भाव.`
+              : `Here is your daily personalized farm advisory, live weather bulletin, and mandi rates for ${user?.main_crop || 'your crops'}.`}
           </p>
         </div>
 
@@ -104,7 +105,7 @@ export const DashboardPage = () => {
             className="px-5 py-3 bg-amber-400 hover:bg-amber-500 text-forest-950 font-bold rounded-2xl transition shadow-md flex items-center gap-2 text-sm"
           >
             <Bot className="w-4 h-4" />
-            <span>Ask Kisan AI</span>
+            <span>{t.askAI || "Ask Kisan AI"}</span>
           </Link>
           <button
             onClick={loadDashboardData}
@@ -123,7 +124,9 @@ export const DashboardPage = () => {
         <div className="p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex items-start gap-3 shadow-xs">
           <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-bold text-sm text-amber-950">Active Agricultural Advisory for {weather.district}</h4>
+            <h4 className="font-bold text-sm text-amber-950">
+              {language === 'hi' ? `${weather.district} के लिए सक्रिय कृषि मौसम सलाह` : language === 'mr' ? `${weather.district} साठी सक्रिय कृषी हवामान सल्ला` : `Active Agricultural Advisory for ${weather.district}`}
+            </h4>
             <p className="text-xs sm:text-sm text-amber-800 mt-0.5 leading-relaxed">{weather.agricultural_alert}</p>
           </div>
         </div>
@@ -141,12 +144,12 @@ export const DashboardPage = () => {
                     <CloudSun className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-black text-gray-950 text-base">Weather in {weather.district}</h3>
+                    <h3 className="font-black text-gray-950 text-base">{language === 'hi' ? `${weather.district} में मौसम` : language === 'mr' ? `${weather.district} मधील हवामान` : `Weather in ${weather.district}`}</h3>
                     <span className="text-xs font-bold text-gray-700">{weather.state}</span>
                   </div>
                 </div>
                 <Link to="/weather" className="text-xs font-black text-forest-700 hover:underline">
-                  7-Day Forecast →
+                  {language === 'hi' ? "7-दिवसीय पूर्वानुमान →" : language === 'mr' ? "७ दिवसांचा अंदाज →" : "7-Day Forecast →"}
                 </Link>
               </div>
 
@@ -154,12 +157,12 @@ export const DashboardPage = () => {
                 <div>
                   <div className="text-4xl font-black text-gray-950">{weather.temperature}°C</div>
                   <div className="text-xs font-bold text-gray-800 mt-1">{weather.condition}</div>
-                  <div className="text-xs font-semibold text-gray-700">Feels like {weather.feels_like}°C</div>
+                  <div className="text-xs font-semibold text-gray-700">{t.feelsLike || "Feels like"} {weather.feels_like}°C</div>
                 </div>
                 <div className="text-right space-y-1 text-xs font-semibold text-gray-800">
-                  <div>Humidity: <span className="font-black text-gray-950">{weather.humidity}%</span></div>
-                  <div>Rain Prob: <span className="font-black text-blue-700">{weather.rain_probability}%</span></div>
-                  <div>Wind: <span className="font-black text-gray-950">{weather.wind_speed} km/h</span></div>
+                  <div>{t.humidity || "Humidity"}: <span className="font-black text-gray-950">{weather.humidity}%</span></div>
+                  <div>{t.rainChance || "Rain Prob"}: <span className="font-black text-blue-700">{weather.rain_probability}%</span></div>
+                  <div>{t.windSpeed || "Wind"}: <span className="font-black text-gray-950">{weather.wind_speed} km/h</span></div>
                 </div>
               </div>
 
@@ -169,7 +172,7 @@ export const DashboardPage = () => {
                   <div key={f.date} className="p-2.5 rounded-xl bg-gray-50 border border-gray-200">
                     <span className="text-xs font-black text-gray-950 block">{f.day_name}</span>
                     <span className="text-xs font-black text-gray-950 my-1 block">{f.temp_max}° / {f.temp_min}°</span>
-                    <span className="text-xs text-blue-700 font-bold">{f.rain_probability}% Rain</span>
+                    <span className="text-xs text-blue-700 font-bold">{f.rain_probability}%</span>
                   </div>
                 ))}
               </div>
@@ -179,7 +182,7 @@ export const DashboardPage = () => {
               to="/weather"
               className="mt-4 pt-3 border-t border-gray-200 text-xs font-black text-forest-800 flex items-center justify-between hover:text-forest-950"
             >
-              <span>View Hourly Forecast & Spray Guidance</span>
+              <span>{t.fieldAdvisory || "View Hourly Forecast & Spray Guidance"}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -194,18 +197,18 @@ export const DashboardPage = () => {
                   <TrendingUp className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-black text-gray-950 text-base">Today's Mandi / Market Prices</h3>
-                  <span className="text-xs font-bold text-gray-700">APMC Live Rates (₹ per Quintal)</span>
+                  <h3 className="font-black text-gray-950 text-base">{t.todaysMandiSnapshot || "Today's Mandi / Market Prices"}</h3>
+                  <span className="text-xs font-bold text-gray-700">{language === 'hi' ? "APMC लाइव भाव (₹ प्रति क्विंटल)" : language === 'mr' ? "APMC थेट दर (₹ प्रति क्विंटल)" : "APMC Live Rates (₹ per Quintal)"}</span>
                 </div>
               </div>
               <Link to="/market-prices" className="text-xs font-black text-forest-700 hover:underline">
-                Explore All Mandis →
+                {t.viewAll || "Explore All Mandis →"}
               </Link>
             </div>
 
             {mandiPrices.length === 0 ? (
               <div className="text-center py-8 text-gray-700 text-sm font-semibold">
-                No active mandi records found for {user?.district}.
+                {language === 'hi' ? `${user?.district || ''} के लिए कोई सक्रिय मंडी भाव उपलब्ध नहीं है।` : language === 'mr' ? `${user?.district || ''} साठी सक्रिय बाजार भाव उपलब्ध नाही.` : `No active mandi records found for ${user?.district}.`}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -233,7 +236,7 @@ export const DashboardPage = () => {
             to="/market-prices"
             className="mt-4 pt-3 border-t border-gray-200 text-xs font-black text-forest-800 flex items-center justify-between hover:text-forest-950"
           >
-            <span>View Historical Price Trends & Interactive Charts</span>
+            <span>{language === 'hi' ? "15 दिनों का मूल्य चार्ट व रुझान देखें" : language === 'mr' ? "१५ दिवसांचा भाव आलेख व कल पहा" : "View Historical Price Trends & Interactive Charts"}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -241,8 +244,8 @@ export const DashboardPage = () => {
 
       {/* Quick Access Action Bar */}
       <div>
-        <h3 className="text-lg font-black text-gray-950 mb-4">{t.quickAccess}</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+        <h3 className="text-lg font-black text-gray-950 mb-4">{t.quickAccess || "Quick Access"}</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {quickTools.map((tool) => {
             const Icon = tool.icon;
             return (
@@ -270,26 +273,28 @@ export const DashboardPage = () => {
                   <Sprout className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-black text-gray-950 text-base">My Crop: {mainCropInfo.name}</h3>
-                  <span className="text-xs font-bold text-gray-700">{mainCropInfo.category} • {mainCropInfo.season} Season</span>
+                  <h3 className="font-black text-gray-950 text-base">
+                    {language === 'hi' ? `मेरी फसल: ${mainCropInfo.hindi_name || mainCropInfo.name}` : language === 'mr' ? `माझे पीक: ${mainCropInfo.marathi_name || mainCropInfo.name}` : `My Crop: ${mainCropInfo.name}`}
+                  </h3>
+                  <span className="text-xs font-bold text-gray-700">{mainCropInfo.category} • {mainCropInfo.season}</span>
                 </div>
               </div>
               <Link to={`/crops/${mainCropInfo.id}`} className="text-xs font-black text-forest-700 hover:underline">
-                Full Guide →
+                {language === 'hi' ? "पूरी गाइड →" : language === 'mr' ? "संपूर्ण माहिती →" : "Full Guide →"}
               </Link>
             </div>
 
             <div className="space-y-2 text-xs text-gray-900 font-medium">
               <div className="p-3 rounded-xl bg-gray-50 border border-gray-200">
-                <span className="font-black text-gray-950 block mb-0.5">Sowing & Harvest Time:</span>
-                <span>{mainCropInfo.sowing_period} (Sowing) → {mainCropInfo.harvest_period} (Harvest)</span>
+                <span className="font-black text-gray-950 block mb-0.5">{language === 'hi' ? "बुवाई एवं कटाई समय:" : language === 'mr' ? "पेरणी व काढणी कालावधी:" : "Sowing & Harvest Time:"}</span>
+                <span>{mainCropInfo.sowing_period} → {mainCropInfo.harvest_period}</span>
               </div>
               <div className="p-3 rounded-xl bg-gray-50 border border-gray-200">
-                <span className="font-black text-gray-950 block mb-0.5">Fertilizer Guidance:</span>
+                <span className="font-black text-gray-950 block mb-0.5">{language === 'hi' ? "खाद एवं उर्वरक सलाह:" : language === 'mr' ? "खत व्यवस्थापन सल्ला:" : "Fertilizer Guidance:"}</span>
                 <span className="line-clamp-2">{mainCropInfo.fertilizer_info}</span>
               </div>
               <div className="p-3 rounded-xl bg-gray-50 border border-gray-200">
-                <span className="font-black text-gray-950 block mb-0.5">Common Diseases:</span>
+                <span className="font-black text-gray-950 block mb-0.5">{language === 'hi' ? "प्रमुख फसल रोग:" : language === 'mr' ? "प्रमुख पीक रोग:" : "Common Diseases:"}</span>
                 <span className="line-clamp-2">{mainCropInfo.common_diseases}</span>
               </div>
             </div>
@@ -303,10 +308,10 @@ export const DashboardPage = () => {
               <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
                 <FileText className="w-5 h-5" />
               </div>
-              <h3 className="font-black text-gray-950 text-base">Agricultural Bulletins</h3>
+              <h3 className="font-black text-gray-950 text-base">{t.latestBulletins || "Agricultural Bulletins"}</h3>
             </div>
             <Link to="/news" className="text-xs font-black text-forest-700 hover:underline">
-              All Bulletins →
+              {t.viewAllBulletins || "All Bulletins →"}
             </Link>
           </div>
 

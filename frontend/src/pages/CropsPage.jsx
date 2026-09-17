@@ -3,23 +3,36 @@ import { Link } from 'react-router-dom';
 import {
   Sprout,
   Search,
-  Filter,
   Calendar,
   Layers,
-  Thermometer,
   Droplets,
-  ArrowRight,
-  ShieldCheck
+  ArrowRight
 } from 'lucide-react';
 import { cropService } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';
 import ErrorMessage from '../components/ErrorMessage';
 
-const CATEGORIES = ["All", "Cereals", "Pulses", "Vegetables", "Fruits", "Cash crops"];
-const SEASONS = ["All", "Kharif", "Rabi", "Zaid", "All Season"];
+const CATEGORIES = [
+  { key: "All", en: "All", hi: "सभी", mr: "सर्व" },
+  { key: "Cereals", en: "Cereals", hi: "अनाज", mr: "धान्य / तृणधान्ये" },
+  { key: "Pulses", en: "Pulses", hi: "दालें", mr: "कडधान्ये / डाळी" },
+  { key: "Vegetables", en: "Vegetables", hi: "सब्जियां", mr: "भाज्या" },
+  { key: "Fruits", en: "Fruits", hi: "फल", mr: "फळे" },
+  { key: "Cash crops", en: "Cash crops", hi: "नकदी फसलें", mr: "नगदी पिके" },
+];
+
+const SEASONS = [
+  { key: "All", en: "All", hi: "सभी", mr: "सर्व" },
+  { key: "Kharif", en: "Kharif", hi: "खरीफ", mr: "खरीप" },
+  { key: "Rabi", en: "Rabi", hi: "रबी", mr: "रब्बी" },
+  { key: "Zaid", en: "Zaid", hi: "जायद", mr: "उन्हाळी / झायेद" },
+  { key: "All Season", en: "All Season", hi: "बारहमासी", mr: "सर्व हंगामी" },
+];
 
 export const CropsPage = () => {
+  const { t, language } = useLanguage();
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -39,7 +52,7 @@ export const CropsPage = () => {
       setCrops(res.data);
     } catch (err) {
       console.error("Failed to load crops:", err);
-      setError("Unable to load crops database. Please try again.");
+      setError(language === 'hi' ? "फसल डेटाबेस लोड करने में असमर्थ। कृपया पुनः प्रयास करें।" : language === 'mr' ? "पीक डेटाबेस लोड करण्यात अडचण आली. कृपया पुन्हा प्रयत्न करा." : "Unable to load crops database. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -61,13 +74,13 @@ export const CropsPage = () => {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-forest-700 text-xs font-bold uppercase tracking-wider">
             <Sprout className="w-4 h-4" />
-            <span>National Crop Encyclopedia</span>
+            <span>{t.cropEncyclopedia || "National Crop Encyclopedia"}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-gray-900">
-            Crop Cultivation & Farming Guides
+            {t.cropGuidesTitle || "Crop Cultivation & Farming Guides"}
           </h1>
           <p className="text-sm text-gray-700 font-medium max-w-2xl">
-            Explore scientific agronomy practices, soil requirements, fertilizer dosing (NPK), and sowing timelines across 5 major categories.
+            {t.cropGuidesSubtitle || "Explore scientific agronomy practices, soil requirements, fertilizer dosing (NPK), and sowing timelines across 5 major categories."}
           </p>
         </div>
 
@@ -78,14 +91,14 @@ export const CropsPage = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search crops (e.g. Wheat, Tomato)..."
+            placeholder={t.searchCrops || "Search crops (e.g. Wheat, Tomato)..."}
             className="w-full pl-10 pr-20 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-600"
           />
           <button
             type="submit"
             className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3.5 py-1.5 bg-forest-700 text-white rounded-lg text-xs font-bold hover:bg-forest-800 transition"
           >
-            Search
+            {t.search || "Search"}
           </button>
         </form>
       </div>
@@ -93,35 +106,35 @@ export const CropsPage = () => {
       {/* Filter Category & Season Chips */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-xs font-bold text-gray-800 shrink-0">Category:</span>
+          <span className="text-xs font-bold text-gray-800 shrink-0">{t.category || "Category"}:</span>
           {CATEGORIES.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              key={cat.key}
+              onClick={() => setSelectedCategory(cat.key)}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
-                selectedCategory === cat
+                selectedCategory === cat.key
                   ? 'bg-forest-800 text-white shadow-sm ring-2 ring-forest-800'
                   : 'bg-white text-gray-800 border-2 border-gray-200 hover:border-forest-600 hover:bg-forest-50'
               }`}
             >
-              {cat}
+              {cat[language] || cat.en}
             </button>
           ))}
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-xs font-bold text-gray-800 shrink-0">Season:</span>
+          <span className="text-xs font-bold text-gray-800 shrink-0">{t.season || "Season"}:</span>
           {SEASONS.map((sea) => (
             <button
-              key={sea}
-              onClick={() => setSelectedSeason(sea)}
+              key={sea.key}
+              onClick={() => setSelectedSeason(sea.key)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
-                selectedSeason === sea
+                selectedSeason === sea.key
                   ? 'bg-amber-700 text-white ring-2 ring-amber-700 shadow-sm'
                   : 'bg-white text-gray-800 border-2 border-gray-200 hover:border-amber-600 hover:bg-amber-50'
               }`}
             >
-              {sea}
+              {sea[language] || sea.en}
             </button>
           ))}
         </div>
@@ -134,9 +147,9 @@ export const CropsPage = () => {
         <LoadingSkeleton count={6} />
       ) : crops.length === 0 ? (
         <EmptyState
-          title="No crops found matching your criteria"
-          description="Try selecting a different category, season, or clearing your search term."
-          actionText="Reset Filters"
+          title={t.noCropsFound || "No crops found matching your criteria"}
+          description={language === 'hi' ? "कृपया कोई अन्य श्रेणी या मौसम चुनें, या खोज शब्द बदलें।" : language === 'mr' ? "कृपया वेगळा प्रवर्ग किंवा हंगाम निवडा, किंवा शोध शब्द बदला." : "Try selecting a different category, season, or clearing your search term."}
+          actionText={t.resetFilters || "Reset Filters"}
           onAction={() => {
             setSelectedCategory('All');
             setSelectedSeason('All');
@@ -172,11 +185,11 @@ export const CropsPage = () => {
 
                 {/* Title */}
                 <h3 className="text-xl font-black text-gray-900 group-hover:text-forest-700 transition mb-1">
-                  {crop.name}
+                  {language === 'hi' && crop.hindi_name ? crop.hindi_name : language === 'mr' && crop.marathi_name ? crop.marathi_name : crop.name}
                 </h3>
-                {crop.hindi_name && (
+                {(crop.hindi_name || crop.marathi_name) && (
                   <p className="text-xs text-gray-700 mb-3 font-bold">
-                    {crop.hindi_name} {crop.marathi_name ? `• ${crop.marathi_name}` : ''}
+                    {crop.name} {crop.hindi_name && language !== 'hi' ? `• ${crop.hindi_name}` : ''} {crop.marathi_name && language !== 'mr' ? `• ${crop.marathi_name}` : ''}
                   </p>
                 )}
 
@@ -184,15 +197,15 @@ export const CropsPage = () => {
                 <div className="space-y-2 text-xs text-gray-800 font-medium">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-3.5 h-3.5 text-forest-700 shrink-0" />
-                    <span>Sowing: <strong className="text-gray-950 font-bold">{crop.sowing_period}</strong></span>
+                    <span>{t.sowing || "Sowing"}: <strong className="text-gray-950 font-bold">{crop.sowing_period}</strong></span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Layers className="w-3.5 h-3.5 text-forest-700 shrink-0" />
-                    <span className="truncate">Soil: <strong className="text-gray-950 font-bold">{crop.soil_type}</strong></span>
+                    <span className="truncate">{t.soil || "Soil"}: <strong className="text-gray-950 font-bold">{crop.soil_type}</strong></span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Droplets className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                    <span>Water: <strong className="text-gray-950 font-bold">{crop.water_requirement}</strong></span>
+                    <span>{t.water || "Water"}: <strong className="text-gray-950 font-bold">{crop.water_requirement}</strong></span>
                   </div>
                 </div>
               </div>
@@ -202,7 +215,7 @@ export const CropsPage = () => {
                 to={`/crops/${crop.id}`}
                 className="mt-6 pt-4 border-t border-gray-200 w-full py-2.5 bg-forest-50 hover:bg-forest-700 text-forest-900 hover:text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
               >
-                <span>View Full Farming Guide</span>
+                <span>{t.viewFullGuide || "View Full Farming Guide"}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

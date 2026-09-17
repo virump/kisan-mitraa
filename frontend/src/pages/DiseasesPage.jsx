@@ -4,24 +4,36 @@ import {
   Search,
   Upload,
   Camera,
-  CheckCircle2,
-  AlertTriangle,
   Info,
-  Bug,
   Sparkles,
-  ArrowRight,
-  RefreshCw,
   X
 } from 'lucide-react';
 import { diseaseService, aiService } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';
 import ErrorMessage from '../components/ErrorMessage';
 
-const CROPS_LIST = ["All", "Tomato", "Wheat", "Rice / Paddy", "Cotton", "Chickpea / Gram", "Onion"];
-const TYPES_LIST = ["All", "Fungal", "Bacterial", "Viral", "Pest"];
+const CROPS_LIST = [
+  { key: "All", en: "All", hi: "सभी", mr: "सर्व" },
+  { key: "Tomato", en: "Tomato", hi: "टमाटर", mr: "टोमॅटो" },
+  { key: "Wheat", en: "Wheat", hi: "गेहूं", mr: "गहू" },
+  { key: "Rice / Paddy", en: "Rice / Paddy", hi: "धान / चावल", mr: "भात / धान" },
+  { key: "Cotton", en: "Cotton", hi: "कपास", mr: "कापूस" },
+  { key: "Chickpea / Gram", en: "Chickpea / Gram", hi: "चना", mr: "हरभरा / चणा" },
+  { key: "Onion", en: "Onion", hi: "प्याज", mr: "कांदा" },
+];
+
+const TYPES_LIST = [
+  { key: "All", en: "All", hi: "सभी", mr: "सर्व" },
+  { key: "Fungal", en: "Fungal", hi: "फफूंद जनित", mr: "बुरशीजन्य" },
+  { key: "Bacterial", en: "Bacterial", hi: "जीवाणु जनित", mr: "जिवाणूजन्य" },
+  { key: "Viral", en: "Viral", hi: "विषाणु जनित", mr: "विषाणूजन्य" },
+  { key: "Pest", en: "Pest", hi: "कीट प्रकोप", mr: "कीड प्रादुर्भाव" },
+];
 
 export const DiseasesPage = () => {
+  const { t, language } = useLanguage();
   const [diseases, setDiseases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -48,7 +60,7 @@ export const DiseasesPage = () => {
       setDiseases(res.data);
     } catch (err) {
       console.error("Failed to load diseases:", err);
-      setError("Unable to load pest & disease catalog. Please try again.");
+      setError(language === 'hi' ? "कीट व रोग कैटलॉग लोड करने में असमर्थ। कृपया पुनः प्रयास करें।" : language === 'mr' ? "कीड व रोग कॅटलॉग लोड करण्यात अडचण आली. कृपया पुन्हा प्रयत्न करा." : "Unable to load pest & disease catalog. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -83,7 +95,7 @@ export const DiseasesPage = () => {
       setDiagnosisResult(res.data);
     } catch (err) {
       console.error("Diagnosis error:", err);
-      setDiagnoseError("Unable to diagnose image. Please try another clear photo of the leaf/fruit.");
+      setDiagnoseError(language === 'hi' ? "फोटो से रोग पहचानने में असमर्थ। कृपया पौधे के प्रभावित हिस्से की स्पष्ट फोटो अपलोड करें।" : language === 'mr' ? "फोटोवरून रोग ओळखण्यात अडचण आली. कृपया पिकाच्या बाधित भागाचा स्पष्ट फोटो अपलोड करा." : "Unable to diagnose image. Please try another clear photo of the leaf/fruit.");
     } finally {
       setDiagnosing(false);
     }
@@ -103,13 +115,13 @@ export const DiseasesPage = () => {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-amber-700 text-xs font-bold uppercase tracking-wider">
             <ShieldAlert className="w-4 h-4" />
-            <span>Crop Pathology & Integrated Pest Management</span>
+            <span>{language === 'hi' ? "पादप रोग विज्ञान एवं एकीकृत कीट प्रबंधन" : language === 'mr' ? "पीक पॅथॉलॉजी व एकात्मिक कीड व्यवस्थापन" : "Crop Pathology & Integrated Pest Management"}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-gray-900">
-            Pest & Disease Diagnosis
+            {t.pestDiagnosisTitle || "Pest & Disease Diagnosis"}
           </h1>
           <p className="text-sm text-gray-700 font-medium max-w-2xl">
-            Identify leaf symptoms, fungal blights, viral curl diseases, and insect infestations with certified chemical and biological treatment protocols.
+            {t.pestDiagnosisSubtitle || "Identify leaf symptoms, fungal blights, viral curl diseases, and insect infestations with certified chemical and biological treatment protocols."}
           </p>
         </div>
 
@@ -121,7 +133,7 @@ export const DiseasesPage = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && fetchDiseases()}
-            placeholder="Search symptoms or pests..."
+            placeholder={t.searchSymptoms || "Search symptoms or pests..."}
             className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
           />
         </div>
@@ -136,13 +148,13 @@ export const DiseasesPage = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-black text-gray-950">AI Crop Image Diagnosis</h2>
+                <h2 className="text-xl font-black text-gray-950">{t.aiImageDiagnosis || "AI Crop Image Diagnosis"}</h2>
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-600 text-white text-[10px] font-black">
-                  Instant AI
+                  {t.instantAI || "Instant AI"}
                 </span>
               </div>
               <p className="text-xs font-semibold text-gray-800">
-                Upload a photo of an affected leaf, stem, or fruit to receive symptom analysis & remedy steps.
+                {language === 'hi' ? "रोगग्रस्त पत्ती, तने या फल का फोटो अपलोड करें और तुरंत लक्षण व उपचार पाएं।" : language === 'mr' ? "बाधित पान, खोड किंवा फळाचा फोटो अपलोड करा आणि त्वरित लक्षणे व उपाय मिळवा." : "Upload a photo of an affected leaf, stem, or fruit to receive symptom analysis & remedy steps."}
               </p>
             </div>
           </div>
@@ -154,8 +166,8 @@ export const DiseasesPage = () => {
             {!imagePreview ? (
               <label className="border-2 border-dashed border-amber-400 rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-amber-100/60 transition bg-white">
                 <Upload className="w-10 h-10 text-amber-700 mb-2" />
-                <span className="text-sm font-black text-gray-900">Click to upload crop image</span>
-                <span className="text-xs font-bold text-gray-700 mt-1">Supports JPG, PNG, WebP</span>
+                <span className="text-sm font-black text-gray-900">{t.uploadCropImage || "Click to upload crop image"}</span>
+                <span className="text-xs font-bold text-gray-700 mt-1">{t.supportsFormats || "Supports JPG, PNG, WebP"}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -186,7 +198,7 @@ export const DiseasesPage = () => {
                 className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-bold rounded-xl transition text-sm flex items-center justify-center gap-2 shadow-sm"
               >
                 <Sparkles className={`w-4 h-4 ${diagnosing ? 'animate-spin' : ''}`} />
-                <span>{diagnosing ? 'Analyzing Disease...' : 'Run AI Analysis'}</span>
+                <span>{diagnosing ? (language === 'hi' ? 'रोग विश्लेषण हो रहा है...' : language === 'mr' ? 'रोग विश्लेषण सुरू आहे...' : 'Analyzing Disease...') : (language === 'hi' ? 'एआई जांच शुरू करें' : language === 'mr' ? 'AI विश्लेषण सुरू करा' : 'Run AI Analysis')}</span>
               </button>
             )}
 
@@ -200,15 +212,15 @@ export const DiseasesPage = () => {
             {diagnosing ? (
               <div className="text-center py-10 space-y-3">
                 <Sparkles className="w-8 h-8 text-amber-500 animate-spin mx-auto" />
-                <p className="text-sm font-bold text-gray-700">AI Vision Engine analyzing plant pathology...</p>
-                <p className="text-xs text-gray-400">Matching visual disease symptoms with national agri databases</p>
+                <p className="text-sm font-bold text-gray-700">{language === 'hi' ? "एआई विजन इंजन रोग के लक्षणों की जांच कर रहा है..." : language === 'mr' ? "AI व्हिजन इंजिन रोगाच्या लक्षणांची तपासणी करत आहे..." : "AI Vision Engine analyzing plant pathology..."}</p>
+                <p className="text-xs text-gray-400">{language === 'hi' ? "राष्ट्रीय कृषि डेटाबेस से लक्षणों का मिलान किया जा रहा है" : language === 'mr' ? "राष्ट्रीय कृषी डेटाबेसशी लक्षणांची जुळवणी केली जात आहे" : "Matching visual disease symptoms with national agri databases"}</p>
               </div>
             ) : diagnosisResult ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <div>
                     <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wide block">
-                      Detected in {diagnosisResult.crop_detected}
+                      {language === 'hi' ? `फसल: ${diagnosisResult.crop_detected}` : language === 'mr' ? `पीक: ${diagnosisResult.crop_detected}` : `Detected in ${diagnosisResult.crop_detected}`}
                     </span>
                     <h3 className="text-lg font-black text-gray-900">
                       {diagnosisResult.disease_detected}
@@ -218,13 +230,13 @@ export const DiseasesPage = () => {
                     )}
                   </div>
                   <span className="px-3 py-1 rounded-full bg-red-100 text-red-800 text-xs font-bold">
-                    {diagnosisResult.severity} Severity
+                    {diagnosisResult.severity} {language === 'hi' ? "गंभीरता" : language === 'mr' ? "तीव्रता" : "Severity"}
                   </span>
                 </div>
 
                 <div className="space-y-2 text-xs">
                   <div>
-                    <strong className="text-gray-900 block mb-0.5">Identified Symptoms:</strong>
+                    <strong className="text-gray-900 block mb-0.5">{language === 'hi' ? "पहचाने गए लक्षण:" : language === 'mr' ? "ओळखलेली लक्षणे:" : "Identified Symptoms:"}</strong>
                     <ul className="list-disc list-inside text-gray-600 space-y-0.5">
                       {diagnosisResult.symptoms.map((s, i) => (
                         <li key={i}>{s}</li>
@@ -233,10 +245,10 @@ export const DiseasesPage = () => {
                   </div>
 
                   <div className="pt-2 border-t border-gray-100">
-                    <strong className="text-forest-800 block mb-0.5">Recommended Treatment:</strong>
+                    <strong className="text-forest-800 block mb-0.5">{language === 'hi' ? "अनुशंसित उपचार व रोकथाम:" : language === 'mr' ? "शिफारस केलेले उपाय व नियंत्रण:" : "Recommended Treatment:"}</strong>
                     <ul className="list-disc list-inside text-forest-700 space-y-0.5 font-medium">
-                      {diagnosisResult.treatment_steps.map((t, i) => (
-                        <li key={i}>{t}</li>
+                      {diagnosisResult.treatment_steps.map((item, i) => (
+                        <li key={i}>{item}</li>
                       ))}
                     </ul>
                   </div>
@@ -246,14 +258,14 @@ export const DiseasesPage = () => {
                 <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2">
                   <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                   <span>
-                    <strong>Disclaimer:</strong> {diagnosisResult.disclaimer}
+                    <strong>{language === 'hi' ? "सलाह / अस्वीकरण:" : language === 'mr' ? "सल्ला / अस्वीकरण:" : "Disclaimer:"}</strong> {diagnosisResult.disclaimer}
                   </span>
                 </div>
               </div>
             ) : (
               <div className="text-center py-10 text-gray-400 space-y-2">
                 <ShieldAlert className="w-10 h-10 mx-auto opacity-30" />
-                <p className="text-sm">Upload a photo on the left and click "Run AI Analysis" to view diagnosis.</p>
+                <p className="text-sm">{language === 'hi' ? "बाईं ओर फोटो अपलोड करें और निदान देखने के लिए 'एआई जांच शुरू करें' पर क्लिक करें।" : language === 'mr' ? "डावीकडे फोटो अपलोड करा आणि निदान पाहण्यासाठी 'AI विश्लेषण सुरू करा' वर क्लिक करा." : 'Upload a photo on the left and click "Run AI Analysis" to view diagnosis.'}</p>
               </div>
             )}
           </div>
@@ -263,35 +275,35 @@ export const DiseasesPage = () => {
       {/* Filter Tabs */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-xs font-bold text-gray-900 shrink-0">Filter Crop:</span>
+          <span className="text-xs font-bold text-gray-900 shrink-0">{t.filterCrop || "Filter Crop"}:</span>
           {CROPS_LIST.map((crop) => (
             <button
-              key={crop}
-              onClick={() => setSelectedCrop(crop)}
+              key={crop.key}
+              onClick={() => setSelectedCrop(crop.key)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
-                selectedCrop === crop
+                selectedCrop === crop.key
                   ? 'bg-forest-800 text-white shadow-sm ring-2 ring-forest-800'
                   : 'bg-white text-gray-800 border-2 border-gray-200 hover:border-forest-600 hover:bg-forest-50'
               }`}
             >
-              {crop}
+              {crop[language] || crop.en}
             </button>
           ))}
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-xs font-bold text-gray-900 shrink-0">Disease Type:</span>
-          {TYPES_LIST.map((t) => (
+          <span className="text-xs font-bold text-gray-900 shrink-0">{t.diseaseType || "Disease Type"}:</span>
+          {TYPES_LIST.map((type) => (
             <button
-              key={t}
-              onClick={() => setSelectedType(t)}
+              key={type.key}
+              onClick={() => setSelectedType(type.key)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
-                selectedType === t
+                selectedType === type.key
                   ? 'bg-amber-700 text-white ring-2 ring-amber-700 shadow-sm'
                   : 'bg-white text-gray-800 border-2 border-gray-200 hover:border-amber-600 hover:bg-amber-50'
               }`}
             >
-              {t}
+              {type[language] || type.en}
             </button>
           ))}
         </div>
@@ -304,9 +316,9 @@ export const DiseasesPage = () => {
         <LoadingSkeleton count={3} />
       ) : diseases.length === 0 ? (
         <EmptyState
-          title="No disease records found"
-          description="Try resetting crop and type filters."
-          actionText="Reset All Filters"
+          title={language === 'hi' ? "कोई रोग रिकॉर्ड नहीं मिला" : language === 'mr' ? "कोणताही रोग रेकॉर्ड सापडला नाही" : "No disease records found"}
+          description={language === 'hi' ? "कृपया फसल या रोग प्रकार के फ़िल्टर रीसेट करें।" : language === 'mr' ? "कृपया पीक किंवा रोगाचे फिल्टर रीसेट करा." : "Try resetting crop and type filters."}
+          actionText={language === 'hi' ? "सभी फ़िल्टर रीसेट करें" : language === 'mr' ? "सर्व फिल्टर रीसेट करा" : "Reset All Filters"}
           onAction={() => {
             setSelectedCrop('All');
             setSelectedType('All');
@@ -331,36 +343,40 @@ export const DiseasesPage = () => {
                       {d.disease_type}
                     </span>
                   </div>
-                  <h3 className="text-lg font-black text-gray-950 mt-1">{d.name}</h3>
-                  {d.hindi_name && <p className="text-xs text-gray-700 font-bold">{d.hindi_name}</p>}
+                  <h3 className="text-lg font-black text-gray-950 mt-1">
+                    {language === 'hi' && d.hindi_name ? d.hindi_name : d.name}
+                  </h3>
+                  {d.hindi_name && language !== 'hi' && (
+                    <p className="text-xs text-gray-700 font-bold">{d.hindi_name}</p>
+                  )}
                 </div>
                 <span className="px-3 py-1 rounded-full bg-red-100 text-red-900 text-xs font-black shrink-0 border border-red-200">
-                  {d.severity} Risk
+                  {d.severity} {language === 'hi' ? "जोखिम" : language === 'mr' ? "धोका" : "Risk"}
                 </span>
               </div>
 
               {/* Symptoms */}
               <div className="space-y-2.5 text-xs">
                 <div className="p-3.5 rounded-xl bg-red-50/70 border border-red-200">
-                  <strong className="text-red-950 block mb-0.5 font-black">Symptoms (लक्षण):</strong>
+                  <strong className="text-red-950 block mb-0.5 font-black">{t.symptoms || "Symptoms (लक्षण)"}:</strong>
                   <p className="text-gray-900 font-medium leading-relaxed">{d.symptoms}</p>
                 </div>
 
                 {d.causes && (
                   <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-200">
-                    <strong className="text-gray-950 block mb-0.5 font-black">Possible Causes (कारण):</strong>
+                    <strong className="text-gray-950 block mb-0.5 font-black">{t.causes || "Possible Causes (कारण)"}:</strong>
                     <p className="text-gray-800 font-medium leading-relaxed">{d.causes}</p>
                   </div>
                 )}
 
                 <div className="p-3.5 rounded-xl bg-forest-50/70 border border-forest-200">
-                  <strong className="text-forest-950 block mb-0.5 font-black">Recommended Treatment (रोकथाम व उपचार):</strong>
+                  <strong className="text-forest-950 block mb-0.5 font-black">{t.treatment || "Recommended Treatment (रोकथाम व उपचार)"}:</strong>
                   <p className="text-forest-900 font-semibold leading-relaxed">{d.treatment}</p>
                 </div>
 
                 {d.prevention && (
                   <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200">
-                    <strong className="text-blue-950 block mb-0.5 font-black">Preventative Agronomy (बचाव):</strong>
+                    <strong className="text-blue-950 block mb-0.5 font-black">{t.prevention || "Preventative Agronomy (बचाव)"}:</strong>
                     <p className="text-blue-900 font-medium leading-relaxed">{d.prevention}</p>
                   </div>
                 )}

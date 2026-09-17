@@ -21,7 +21,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { weatherService, marketService, newsService } from '../services/api';
 
 export const LandingPage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [weatherData, setWeatherData] = useState(null);
   const [mandiPrices, setMandiPrices] = useState([]);
   const [newsList, setNewsList] = useState([]);
@@ -43,51 +43,51 @@ export const LandingPage = () => {
 
   const features = [
     {
-      title: "Weather Intelligence",
-      description: "Hyper-local 7-day temperature, rainfall probability, humidity alerts, and crop spray advisory.",
+      title: language === 'hi' ? "मौसम एवं छिड़काव सलाह" : language === 'mr' ? "हवामान व फवारणी सल्ला" : "Weather Intelligence",
+      description: language === 'hi' ? "7 दिनों का तापमान, बारिश की संभावना, नमी और खेत छिड़काव की वैज्ञानिक सलाह।" : language === 'mr' ? "७ दिवसांचे तापमान, पावसाचा अंदाज, आर्द्रता आणि शेती फवारणीसाठी अचूक सल्ला." : "Hyper-local 7-day temperature, rainfall probability, humidity alerts, and crop spray advisory.",
       icon: CloudSun,
       link: "/weather",
-      tag: "Live & Hourly",
+      tag: language === 'hi' ? "लाइव व प्रति घंटा" : language === 'mr' ? "थेट व तासनिहाय" : "Live & Hourly",
       bg: "from-blue-500/10 to-emerald-500/10",
       border: "border-blue-100",
       iconColor: "text-blue-600",
     },
     {
-      title: "Crop Encyclopedia",
-      description: "Over 50+ detailed crop protocols covering sowing, NPK fertilizer dosing, season, and irrigation.",
+      title: language === 'hi' ? "फसल ज्ञानकोश" : language === 'mr' ? "पीक ज्ञानकोश" : "Crop Encyclopedia",
+      description: language === 'hi' ? "50+ फसलों की बुवाई, NPK उर्वरक मात्रा, उपयुक्त मौसम और सिंचाई की संपूर्ण गाइड।" : language === 'mr' ? "५०+ पिकांची लागवड, NPK खतांचे डोस, हंगाम आणि पाणी व्यवस्थापनाची परिपूर्ण माहिती." : "Over 50+ detailed crop protocols covering sowing, NPK fertilizer dosing, season, and irrigation.",
       icon: Sprout,
       link: "/crops",
-      tag: "5 Major Categories",
+      tag: language === 'hi' ? "5 प्रमुख श्रेणियां" : language === 'mr' ? "५ प्रमुख वर्ग" : "5 Major Categories",
       bg: "from-emerald-500/10 to-green-500/10",
       border: "border-emerald-100",
       iconColor: "text-emerald-600",
     },
     {
-      title: "AI Disease Diagnosis",
-      description: "Instant photographic and symptom-based diagnosis of crop diseases, pests, and certified remedies.",
+      title: language === 'hi' ? "एआई रोग एवं कीट पहचान" : language === 'mr' ? "AI पीक रोग व कीड निदान" : "AI Disease Diagnosis",
+      description: language === 'hi' ? "पौधे का फोटो खींचकर या लक्षण चुनकर तुरंत रोग की पहचान व प्रमाणित उपचार पाएं।" : language === 'mr' ? "झाडाचा फोटो काढून किंवा लक्षणे निवडून तातडीने रोग ओळखा आणि उपाय मिळवा." : "Instant photographic and symptom-based diagnosis of crop diseases, pests, and certified remedies.",
       icon: ShieldAlert,
       link: "/diseases",
-      tag: "AI Powered",
+      tag: language === 'hi' ? "एआई आधारित" : language === 'mr' ? "AI आधारित" : "AI Powered",
       bg: "from-amber-500/10 to-orange-500/10",
       border: "border-amber-100",
       iconColor: "text-amber-600",
     },
     {
-      title: "Mandi Price Tracker",
-      description: "Daily APMC mandi commodity rates, minimum/maximum/modal prices, and 15-day price history graphs.",
+      title: language === 'hi' ? "दैनिक मंडी भाव" : language === 'mr' ? "दैनिक बाजार भाव" : "Mandi Price Tracker",
+      description: language === 'hi' ? "विभिन्न APMC मंडियों के न्यूनतम, अधिकतम, मॉडल भाव और 15 दिनों के ऐतिहासिक चार्ट।" : language === 'mr' ? "APMC बाजार समित्यांमधील किमान, कमाल, सरासरी भाव आणि १५ दिवसांचे चार्ट." : "Daily APMC mandi commodity rates, minimum/maximum/modal prices, and 15-day price history graphs.",
       icon: TrendingUp,
       link: "/market-prices",
-      tag: "State-wise",
+      tag: language === 'hi' ? "राज्यवार भाव" : language === 'mr' ? "राज्यनिहाय दर" : "State-wise",
       bg: "from-purple-500/10 to-pink-500/10",
       border: "border-purple-100",
       iconColor: "text-purple-600",
     },
     {
-      title: "Government Schemes",
-      description: "Direct verified eligibility, financial benefits, and application guidelines for PM-KISAN, PMFBY, and KCC.",
+      title: language === 'hi' ? "सरकारी योजनाएं व सब्सिडी" : language === 'mr' ? "शासकीय योजना व सबसिडी" : "Government Schemes",
+      description: language === 'hi' ? "पीएम-किसान, फसल बीमा, किसान क्रेडिट कार्ड की पात्रता, लाभ और आवेदन की प्रक्रिया।" : language === 'mr' ? "पीएम-किसान, पीक विमा, किसान क्रेडिट कार्डचे निकष, फायदे आणि अर्ज पद्धत." : "Direct verified eligibility, financial benefits, and application guidelines for PM-KISAN, PMFBY, and KCC.",
       icon: Award,
       link: "/schemes",
-      tag: "Official Portals",
+      tag: language === 'hi' ? "सरकारी पोर्टल" : language === 'mr' ? "शासकीय पोर्टल" : "Official Portals",
       bg: "from-teal-500/10 to-cyan-500/10",
       border: "border-teal-100",
       iconColor: "text-teal-600",
@@ -108,18 +108,18 @@ export const LandingPage = () => {
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/40 border border-emerald-400/40 text-emerald-200 text-xs sm:text-sm font-bold backdrop-blur-md">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                <span>Next-Gen Agricultural Intelligence Platform</span>
+                <span>{t.nextGenPlatform}</span>
               </div>
 
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] text-white">
-                Smart Farming Starts With{" "}
+                {t.heroHeading1}{" "}
                 <span className="text-amber-400 drop-shadow-sm">
-                  Better Information
+                  {t.heroHeading2}
                 </span>
               </h1>
 
               <p className="text-emerald-100 text-base sm:text-lg sm:leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
-                Get weather, crop, market and farming information in one place. Empowering farmers with hyper-local forecasts, daily mandi prices, crop disease diagnosis, and multilingual AI advisory.
+                {t.heroSubtitle}
               </p>
 
               {/* Action Buttons */}
@@ -128,7 +128,7 @@ export const LandingPage = () => {
                   to="/crops"
                   className="w-full sm:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl transition duration-200 shadow-xl shadow-black/30 flex items-center justify-center gap-2 group text-base"
                 >
-                  <span>Explore Farming Tools</span>
+                  <span>{t.exploreTools}</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
@@ -136,7 +136,7 @@ export const LandingPage = () => {
                   className="w-full sm:w-auto px-8 py-4 bg-amber-400 hover:bg-amber-300 text-gray-950 font-black rounded-2xl transition duration-200 shadow-xl shadow-black/20 flex items-center justify-center gap-2 text-base"
                 >
                   <Bot className="w-5 h-5 text-gray-950" />
-                  <span>Ask Kisan AI</span>
+                  <span>{t.askAI}</span>
                 </Link>
               </div>
 
@@ -144,15 +144,15 @@ export const LandingPage = () => {
               <div className="pt-6 grid grid-cols-3 gap-4 border-t border-emerald-800/80 max-w-lg mx-auto lg:mx-0 text-center lg:text-left">
                 <div>
                   <div className="text-2xl sm:text-3xl font-black text-amber-400">100%</div>
-                  <div className="text-xs text-emerald-100 font-bold">Free for Farmers</div>
+                  <div className="text-xs text-emerald-100 font-bold">{t.freeForFarmers}</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-black text-amber-400">3 Langs</div>
-                  <div className="text-xs text-emerald-100 font-bold">EN | HI | MR</div>
+                  <div className="text-2xl sm:text-3xl font-black text-amber-400">{t.langsSupported}</div>
+                  <div className="text-xs text-emerald-100 font-bold">{t.langsList}</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-black text-amber-400">24x7</div>
-                  <div className="text-xs text-emerald-100 font-bold">AI Agri Assistance</div>
+                  <div className="text-2xl sm:text-3xl font-black text-amber-400">{t.aiAssistance24x7}</div>
+                  <div className="text-xs text-emerald-100 font-bold">{t.aiAgriDesc}</div>
                 </div>
               </div>
             </div>
@@ -168,7 +168,7 @@ export const LandingPage = () => {
                       <span>{weatherData.location}</span>
                     </div>
                     <span className="px-3 py-0.5 rounded-full bg-emerald-500 text-forest-950 text-xs font-black">
-                      Live Weather
+                      {t.liveWeather}
                     </span>
                   </div>
                   <div className="flex items-center justify-between pt-3">
@@ -180,15 +180,15 @@ export const LandingPage = () => {
                   </div>
                   <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-white/15 text-center text-xs">
                     <div className="p-2 rounded-xl bg-black/30 border border-white/10">
-                      <span className="text-emerald-200 block text-[11px] font-medium">Humidity</span>
+                      <span className="text-emerald-200 block text-[11px] font-medium">{t.humidity}</span>
                       <span className="font-black text-sm text-white">{weatherData.humidity}%</span>
                     </div>
                     <div className="p-2 rounded-xl bg-black/30 border border-white/10">
-                      <span className="text-emerald-200 block text-[11px] font-medium">Rain Chance</span>
+                      <span className="text-emerald-200 block text-[11px] font-medium">{t.rainChance}</span>
                       <span className="font-black text-sm text-amber-300">{weatherData.rain_probability}%</span>
                     </div>
                     <div className="p-2 rounded-xl bg-black/30 border border-white/10">
-                      <span className="text-emerald-200 block text-[11px] font-medium">Wind</span>
+                      <span className="text-emerald-200 block text-[11px] font-medium">{t.windSpeed}</span>
                       <span className="font-black text-sm text-white">{weatherData.wind_speed} km/h</span>
                     </div>
                   </div>
@@ -200,10 +200,10 @@ export const LandingPage = () => {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400">
                     <TrendingUp className="w-4 h-4" />
-                    <span>Today's Mandi Snapshot</span>
+                    <span>{t.todaysMandiSnapshot}</span>
                   </div>
                   <Link to="/market-prices" className="text-xs font-bold text-emerald-300 hover:underline">
-                    View All →
+                    {t.viewAll}
                   </Link>
                 </div>
                 <div className="space-y-2">
@@ -218,7 +218,7 @@ export const LandingPage = () => {
                       </div>
                       <div className="text-right">
                         <span className="font-black text-base text-amber-400">₹{item.modal_price}</span>
-                        <span className="text-[10px] text-emerald-200 block font-medium">/ Quintal</span>
+                        <span className="text-[10px] text-emerald-200 block font-medium">{t.perQuintal}</span>
                       </div>
                     </div>
                   ))}
@@ -233,13 +233,13 @@ export const LandingPage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
           <span className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-forest-800 bg-forest-100 px-3.5 py-1 rounded-full border border-forest-300">
-            Comprehensive Suite
+            {t.comprehensiveSuite}
           </span>
           <h2 className="text-2xl sm:text-4xl font-black text-gray-900">
-            Everything A Progressive Farmer Needs
+            {t.everythingFarmerNeeds}
           </h2>
           <p className="text-gray-700 font-medium text-sm sm:text-base">
-            From climate-smart weather advisories to instant pathology diagnostics and direct market price intelligence.
+            {t.featureSubtitle}
           </p>
         </div>
 
@@ -270,7 +270,7 @@ export const LandingPage = () => {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-gray-200 flex items-center justify-between text-xs font-bold text-forest-700 group-hover:text-forest-900">
-                  <span>Explore Feature</span>
+                  <span>{t.exploreTools}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
@@ -286,13 +286,13 @@ export const LandingPage = () => {
             <div className="lg:col-span-8 space-y-4">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/40 border border-emerald-400/40 text-emerald-200 text-xs font-bold">
                 <Bot className="w-4 h-4 text-amber-400" />
-                <span>Multilingual 24/7 Digital Agri Expert</span>
+                <span>{language === 'hi' ? "24/7 बहुभाषी डिजिटल कृषि विशेषज्ञ" : language === 'mr' ? "२४/७ बहुभाषिक डिजिटल कृषी तज्ज्ञ" : "Multilingual 24/7 Digital Agri Expert"}</span>
               </div>
               <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
-                Got A Farming Problem? Ask Kisan AI Assistant!
+                {t.gotFarmingProblem}
               </h2>
               <p className="text-emerald-100 text-sm sm:text-base leading-relaxed max-w-2xl font-medium">
-                Ask in English, हिन्दी, or मराठी. Get immediate solutions for leaf yellowing, pest treatments, crop sowing dates, fertilizer dosage calculations, and government scheme eligibility.
+                {t.aiBannerDesc}
               </p>
               <div className="pt-2 flex flex-wrap gap-3">
                 <Link
@@ -300,30 +300,30 @@ export const LandingPage = () => {
                   className="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-gray-950 font-black rounded-xl transition shadow-lg flex items-center gap-2 text-sm"
                 >
                   <Bot className="w-4 h-4 text-gray-950" />
-                  <span>Start Chat with Kisan AI</span>
+                  <span>{t.startChatAI}</span>
                 </Link>
                 <Link
                   to="/diseases"
                   className="px-6 py-3.5 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold rounded-xl transition text-sm"
                 >
-                  Upload Plant Photo
+                  {t.uploadPlantPhoto}
                 </Link>
               </div>
             </div>
 
             <div className="lg:col-span-4 bg-black/50 p-5 rounded-2xl border border-emerald-400/30 space-y-3">
               <span className="text-xs font-black text-amber-400 uppercase tracking-wide block">
-                Sample Questions You Can Ask
+                {t.sampleQuestions}
               </span>
               <div className="space-y-2 text-xs text-white font-medium">
                 <div className="p-2.5 rounded-lg bg-white/10 border border-white/10">
-                  "Which crop is suitable for black soil?"
+                  {language === 'hi' ? "काली मिट्टी के लिए कौन सी फसल उपयुक्त है?" : language === 'mr' ? "काळी मातीत कोणती पिके चांगली येतात?" : "Which crop is suitable for black soil?"}
                 </div>
                 <div className="p-2.5 rounded-lg bg-white/10 border border-white/10">
-                  "गेहूं की बुवाई का सही समय और बीज दर क्या है?"
+                  {language === 'hi' ? "गेहूं की बुवाई का सही समय और बीज दर क्या है?" : language === 'mr' ? "गव्हाच्या पेरणीची योग्य वेळ आणि खतांचे नियोजन?" : "When should I sow wheat?"}
                 </div>
                 <div className="p-2.5 rounded-lg bg-white/10 border border-white/10">
-                  "टोमॅटोची पाने पिवळी पडत आहेत, काय उपाय करावा?"
+                  {language === 'hi' ? "टमाटर की पत्तियां पीली पड़ रही हैं, क्या उपाय करें?" : language === 'mr' ? "टोमॅटोची पाने पिवळी पडत आहेत, काय उपाय करावा?" : "Why are tomato leaves turning yellow?"}
                 </div>
               </div>
             </div>
@@ -337,17 +337,17 @@ export const LandingPage = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
             <div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
-                Latest Agricultural Bulletins
+                {t.latestBulletins}
               </h2>
               <p className="text-gray-600 text-sm mt-1">
-                Verified announcements from Ministry of Agriculture, IMD, and ICAR.
+                {t.bulletinSubtitle}
               </p>
             </div>
             <Link
               to="/news"
               className="text-sm font-bold text-forest-600 hover:text-forest-800 flex items-center gap-1"
             >
-              <span>View All Bulletins</span>
+              <span>{t.viewAllBulletins}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

@@ -7,17 +7,26 @@ import {
   FileCheck,
   FileText,
   Building2,
-  ArrowRight,
   ShieldCheck
 } from 'lucide-react';
 import { schemeService } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';
 import ErrorMessage from '../components/ErrorMessage';
 
-const CATEGORIES = ["All", "Financial Assistance", "Crop Insurance", "Credit & Finance", "Soil & Nutrient Health", "Market & Trade", "Irrigation & Infrastructure"];
+const CATEGORIES = [
+  { key: "All", en: "All", hi: "सभी", mr: "सर्व" },
+  { key: "Financial Assistance", en: "Financial Assistance", hi: "आर्थिक सहायता", mr: "आर्थिक सहाय्य" },
+  { key: "Crop Insurance", en: "Crop Insurance", hi: "फसल बीमा", mr: "पीक विमा" },
+  { key: "Credit & Finance", en: "Credit & Finance", hi: "ऋण एवं केसीसी", mr: "कर्ज व केसीसी" },
+  { key: "Soil & Nutrient Health", en: "Soil & Nutrient Health", hi: "मृदा व उर्वरक", mr: "माती व खते" },
+  { key: "Market & Trade", en: "Market & Trade", hi: "बाजार व व्यापार", mr: "बाजार व व्यापार" },
+  { key: "Irrigation & Infrastructure", en: "Irrigation & Infrastructure", hi: "सिंचाई व उपकरण", mr: "सिंचन व पायाभूत सुविधा" }
+];
 
 export const SchemesPage = () => {
+  const { t, language } = useLanguage();
   const [schemes, setSchemes] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [search, setSearch] = useState('');
@@ -35,7 +44,7 @@ export const SchemesPage = () => {
       setSchemes(res.data);
     } catch (err) {
       console.error("Failed to load schemes:", err);
-      setError("Unable to load government schemes. Please try again.");
+      setError(language === 'hi' ? "सरकारी योजनाएं लोड करने में असमर्थ। कृपया पुनः प्रयास करें।" : language === 'mr' ? "शासकीय योजना लोड करण्यात अडचण आली. कृपया पुन्हा प्रयत्न करा." : "Unable to load government schemes. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -57,13 +66,13 @@ export const SchemesPage = () => {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-teal-700 text-xs font-bold uppercase tracking-wider">
             <Award className="w-4 h-4" />
-            <span>Direct Benefit & Welfare Schemes</span>
+            <span>{language === 'hi' ? "प्रत्यक्ष लाभ एवं किसान कल्याण योजनाएं" : language === 'mr' ? "थेट लाभ व शेतकरी कल्याण योजना" : "Direct Benefit & Welfare Schemes"}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-gray-900">
-            Government Agriculture Schemes
+            {t.govtSchemesTitle || "Government Agriculture Schemes"}
           </h1>
           <p className="text-sm text-gray-700 font-medium max-w-2xl">
-            Verified Indian Central & State Government farmer welfare initiatives, subsidies, crop insurance, and Kisan Credit Card facilities.
+            {t.govtSchemesSubtitle || "Verified Indian Central & State Government farmer welfare initiatives, subsidies, crop insurance, and Kisan Credit Card facilities."}
           </p>
         </div>
 
@@ -74,7 +83,7 @@ export const SchemesPage = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search schemes (e.g. PM-KISAN)..."
+            placeholder={t.searchSchemes || "Search schemes (e.g. PM-KISAN)..."}
             className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
           />
         </form>
@@ -82,18 +91,18 @@ export const SchemesPage = () => {
 
       {/* Category Chips */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-        <span className="text-xs font-black text-gray-900 shrink-0">Category:</span>
+        <span className="text-xs font-black text-gray-900 shrink-0">{t.category || "Category"}:</span>
         {CATEGORIES.map((cat) => (
           <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
+            key={cat.key}
+            onClick={() => setSelectedCategory(cat.key)}
             className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
-              selectedCategory === cat
+              selectedCategory === cat.key
                 ? 'bg-teal-800 text-white shadow-sm ring-2 ring-teal-800'
                 : 'bg-white text-gray-800 border-2 border-gray-200 hover:border-teal-600 hover:bg-teal-50'
             }`}
           >
-            {cat}
+            {cat[language] || cat.en}
           </button>
         ))}
       </div>
@@ -105,9 +114,9 @@ export const SchemesPage = () => {
         <LoadingSkeleton count={3} />
       ) : schemes.length === 0 ? (
         <EmptyState
-          title="No government schemes found"
-          description="Try changing the category or search keywords."
-          actionText="Reset Filter"
+          title={language === 'hi' ? "कोई सरकारी योजना नहीं मिली" : language === 'mr' ? "कोणतीही शासकीय योजना आढळली नाही" : "No government schemes found"}
+          description={language === 'hi' ? "कृपया श्रेणी बदलें या खोज शब्द बदलें।" : language === 'mr' ? "कृपया प्रवर्ग बदला किंवा शोध शब्द बदला." : "Try changing the category or search keywords."}
+          actionText={t.resetFilters || "Reset Filter"}
           onAction={() => {
             setSelectedCategory('All');
             setSearch('');
@@ -127,8 +136,10 @@ export const SchemesPage = () => {
                     <span className="px-3 py-1 rounded-full bg-teal-100 text-teal-900 text-xs font-black">
                       {scheme.category}
                     </span>
-                    <h2 className="text-xl font-black text-gray-950 mt-2">{scheme.name}</h2>
-                    {scheme.hindi_name && (
+                    <h2 className="text-xl font-black text-gray-950 mt-2">
+                      {language === 'hi' && scheme.hindi_name ? scheme.hindi_name : scheme.name}
+                    </h2>
+                    {scheme.hindi_name && language !== 'hi' && (
                       <p className="text-xs text-gray-700 font-bold">{scheme.hindi_name}</p>
                     )}
                   </div>
@@ -150,7 +161,7 @@ export const SchemesPage = () => {
                   <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200">
                     <strong className="text-emerald-950 text-xs font-black flex items-center gap-1.5 mb-1">
                       <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-                      Financial Benefits & Support:
+                      {t.benefitsSupport || "Financial Benefits & Support"}:
                     </strong>
                     <p className="text-xs text-emerald-900 font-medium leading-relaxed">{scheme.benefits}</p>
                   </div>
@@ -158,7 +169,7 @@ export const SchemesPage = () => {
                   <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200">
                     <strong className="text-blue-950 text-xs font-black flex items-center gap-1.5 mb-1">
                       <ShieldCheck className="w-4 h-4 text-blue-700" />
-                      Eligibility Criteria:
+                      {t.eligibilityCriteria || "Eligibility Criteria"}:
                     </strong>
                     <p className="text-xs text-blue-900 font-medium leading-relaxed">{scheme.eligibility}</p>
                   </div>
@@ -166,7 +177,7 @@ export const SchemesPage = () => {
                   <div className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200">
                     <strong className="text-gray-950 text-xs font-black flex items-center gap-1.5 mb-1">
                       <FileCheck className="w-4 h-4 text-gray-700" />
-                      Required Documents:
+                      {t.requiredDocuments || "Required Documents"}:
                     </strong>
                     <p className="text-xs text-gray-800 font-medium leading-relaxed">{scheme.required_documents}</p>
                   </div>
@@ -174,7 +185,7 @@ export const SchemesPage = () => {
                   <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200">
                     <strong className="text-amber-950 text-xs font-black flex items-center gap-1.5 mb-1">
                       <FileText className="w-4 h-4 text-amber-700" />
-                      How to Apply:
+                      {t.howToApply || "How to Apply"}:
                     </strong>
                     <p className="text-xs text-amber-900 font-medium leading-relaxed">{scheme.application_process}</p>
                   </div>
@@ -189,7 +200,7 @@ export const SchemesPage = () => {
                   rel="noreferrer"
                   className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm"
                 >
-                  <span>Visit Official Portal</span>
+                  <span>{t.visitOfficialPortal || "Visit Official Portal"}</span>
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>

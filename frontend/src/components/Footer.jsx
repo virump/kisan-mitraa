@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sprout, Phone, Mail, ShieldCheck, Heart, ExternalLink } from 'lucide-react';
+import { Sprout, ShieldCheck, Heart, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export const Footer = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <footer className="bg-forest-950 text-forest-100 pt-16 pb-24 lg:pb-12 border-t border-forest-900">
@@ -21,45 +21,49 @@ export const Footer = () => {
               </span>
             </div>
             <p className="text-forest-200 text-sm leading-relaxed max-w-sm">
-              An intelligent, responsive digital companion for Indian agriculture, delivering real-time weather analytics, market mandis, crop pathology advisory, soil diagnostics, and welfare schemes.
+              {language === 'hi'
+                ? "भारतीय किसानों के लिए एक उन्नत डिजिटल मंच — मौसम पूर्वानुमान, मंडी भाव, फसल रोग निदान और सरकारी योजनाओं की सटीक जानकारी।"
+                : language === 'mr'
+                ? "भारतीय शेतकऱ्यांसाठी एक प्रगत डिजिटल व्यासपीठ — थेट हवामान अंदाज, बाजार भाव, पीक रोग निदान आणि शासकीय योजनांची अचूक माहिती."
+                : "An intelligent, responsive digital companion for Indian agriculture, delivering real-time weather analytics, market mandis, crop pathology advisory, and welfare schemes."}
             </p>
             <div className="flex items-center gap-2 text-xs text-forest-300">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Certified National Agriculture Open Data Compliant</span>
+              <span>{language === 'hi' ? "राष्ट्रीय कृषि ओपन डेटा अनुरूप" : language === 'mr' ? "राष्ट्रीय कृषी ओपन डेटा सुसंगत" : "Certified National Agriculture Open Data Compliant"}</span>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-white font-bold text-base mb-4 tracking-wide">Farming Tools</h4>
+            <h4 className="text-white font-bold text-base mb-4 tracking-wide">{t.farmingTools || "Farming Tools"}</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link to="/weather" className="hover:text-white transition">Weather Forecast</Link>
+                <Link to="/weather" className="hover:text-white transition">{t.navWeather || "Weather Forecast"}</Link>
               </li>
               <li>
-                <Link to="/crops" className="hover:text-white transition">Crop Database</Link>
+                <Link to="/crops" className="hover:text-white transition">{t.navCrops || "Crop Database"}</Link>
               </li>
               <li>
-                <Link to="/diseases" className="hover:text-white transition">Disease Diagnosis</Link>
+                <Link to="/diseases" className="hover:text-white transition">{t.navDiseases || "Disease Diagnosis"}</Link>
               </li>
               <li>
-                <Link to="/market-prices" className="hover:text-white transition">Mandi Price Ticker</Link>
+                <Link to="/market-prices" className="hover:text-white transition">{t.navMarket || "Mandi Price Ticker"}</Link>
               </li>
             </ul>
           </div>
 
           {/* Resources */}
           <div>
-            <h4 className="text-white font-bold text-base mb-4 tracking-wide">Resources</h4>
+            <h4 className="text-white font-bold text-base mb-4 tracking-wide">{t.resources || "Resources"}</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link to="/schemes" className="hover:text-white transition">Govt Welfare Schemes</Link>
+                <Link to="/schemes" className="hover:text-white transition">{t.navSchemes || "Govt Welfare Schemes"}</Link>
               </li>
               <li>
-                <Link to="/news" className="hover:text-white transition">Agriculture Bulletins</Link>
+                <Link to="/news" className="hover:text-white transition">{t.navNews || "Agriculture Bulletins"}</Link>
               </li>
               <li>
-                <Link to="/ai-assistant" className="hover:text-white transition">Kisan AI Chatbot</Link>
+                <Link to="/ai-assistant" className="hover:text-white transition">{t.navAIAssistant || "Kisan AI Chatbot"}</Link>
               </li>
               <li>
                 <a href="https://pmkisan.gov.in" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-white transition">
@@ -76,14 +80,14 @@ export const Footer = () => {
 
           {/* Emergency & Helpline */}
           <div>
-            <h4 className="text-white font-bold text-base mb-4 tracking-wide">Farmer Helplines</h4>
+            <h4 className="text-white font-bold text-base mb-4 tracking-wide">{t.farmerHelplines || "Farmer Helplines"}</h4>
             <div className="space-y-3 text-sm">
               <div className="p-3 rounded-xl bg-forest-900/60 border border-forest-800">
-                <span className="text-xs text-amber-400 block font-semibold">Toll-Free Kisan Call Center</span>
-                <span className="text-white font-bold text-base">1800-180-1551</span>
+                <span className="text-xs text-amber-400 block font-semibold">{t.tollFreeLabel || "Toll-Free Kisan Call Center"}</span>
+                <span className="text-white font-bold text-base">{t.tollFreeNumber || "1800-180-1551"}</span>
               </div>
               <div className="p-3 rounded-xl bg-forest-900/60 border border-forest-800">
-                <span className="text-xs text-amber-400 block font-semibold">Kisan Mitra Support Desk</span>
+                <span className="text-xs text-amber-400 block font-semibold">{t.supportDesk || "Kisan Mitra Support Desk"}</span>
                 <span className="text-white text-xs">support@kisanmitra.gov.in</span>
               </div>
             </div>
@@ -91,11 +95,11 @@ export const Footer = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t border-forest-900 flex flex-col sm:flex-row items-center justify-between text-xs text-forest-400 gap-4">
-          <p>© {new Date().getFullYear()} Kisan Mitra Smart Farmer Platform. Built for Indian Farmers.</p>
+          <p>© {new Date().getFullYear()} {t.copyright || "Kisan Mitra Smart Farmer Platform. Built for Indian Farmers."}</p>
           <div className="flex items-center gap-1">
-            <span>Empowering agriculture with</span>
+            <span>{language === 'hi' ? "कृषि और तकनीक का सशक्त संगम" : language === 'mr' ? "कृषी व तंत्रज्ञानाचा संगम" : "Empowering agriculture with"}</span>
             <Heart className="w-3.5 h-3.5 text-red-400 fill-red-400" />
-            <span>and Technology</span>
+            <span>{language === 'hi' ? "" : language === 'mr' ? "" : "and Technology"}</span>
           </div>
         </div>
       </div>

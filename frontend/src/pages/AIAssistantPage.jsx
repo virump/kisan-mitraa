@@ -5,12 +5,8 @@ import {
   User,
   Sparkles,
   RefreshCw,
-  Globe,
   Mic,
-  MicOff,
-  HelpCircle,
-  CheckCircle2,
-  Info
+  MicOff
 } from 'lucide-react';
 import { aiService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -18,25 +14,46 @@ import { useLanguage } from '../context/LanguageContext';
 
 export const AIAssistantPage = () => {
   const { user } = useAuth();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
 
-  const [messages, setMessages] = useState([
-    {
+  const getInitialMessage = (lang) => {
+    if (lang === 'hi') {
+      return {
+        role: 'assistant',
+        text: "नमस्ते किसान भाई! मैं आपका किसान एआई सहायक हूँ। आप मुझसे फसल बुवाई, खाद की मात्रा, कीट-रोग नियंत्रण या सरकारी योजनाओं से जुड़ा कोई भी सवाल पूछ सकते हैं।",
+        suggestions: [
+          "काली मिट्टी के लिए कौन सी फसल उपयुक्त है?",
+          "गेहूं की बुवाई का सही समय क्या है?",
+          "टमाटर के पत्ते पीले क्यों पड़ रहे हैं?",
+          "धान में कौन सा उर्वरक डालना चाहिए?"
+        ]
+      };
+    }
+    if (lang === 'mr') {
+      return {
+        role: 'assistant',
+        text: "नमस्कार शेतकरी बंधूंनो! मी तुमचा किसान AI सहाय्यक आहे. तुम्ही मला पिकांची पेरणी, खते, कीड नियंत्रण किंवा शासकीय योजनांबद्दल विचारू शकता.",
+        suggestions: [
+          "काळी मातीसाठी कोणते पीक योग्य आहे?",
+          "गव्हाची पेरणी कधी करावी?",
+          "टोमॅटोची पाने पिवळी का पडत आहेत?",
+          "कापूस पिकासाठी खत व्यवस्थापन कसे करावे?"
+        ]
+      };
+    }
+    return {
       role: 'assistant',
-      text: language === 'hi'
-        ? "नमस्ते किसान भाई! मैं आपका किसान एआई सहायक हूँ। आप मुझसे फसल बुवाई, खाद की मात्रा, कीट-रोग नियंत्रण या सरकारी योजनाओं से जुड़ा कोई भी सवाल पूछ सकते हैं।"
-        : language === 'mr'
-        ? "नमस्कार शेतकरी बंधूंनो! मी तुमचा किसान AI सहाय्यक आहे. तुम्ही मला पिकांची पेरणी, खते, कीड नियंत्रण किंवा शासकीय योजनांबद्दल विचारू शकता."
-        : "Hello Farmer Friend! I am your Kisan AI Assistant. Ask me anything regarding crop sowing dates, fertilizer dosing, pest & disease remedies, weather guidance, or government schemes.",
+      text: "Hello Farmer Friend! I am your Kisan AI Assistant. Ask me anything regarding crop sowing dates, fertilizer dosing, pest & disease remedies, weather guidance, or government schemes.",
       suggestions: [
         "Which crop is suitable for black soil?",
         "When should I sow wheat?",
         "Why are my tomato leaves turning yellow?",
         "What fertilizer is generally used for rice?"
       ]
-    }
-  ]);
+    };
+  };
 
+  const [messages, setMessages] = useState([getInitialMessage(language)]);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [conversationId, setConversationId] = useState('');
@@ -86,8 +103,8 @@ export const AIAssistantPage = () => {
         ...prev,
         {
           role: 'assistant',
-          text: "I am having difficulty processing your request right now. Please try asking again in simple words or switch language.",
-          suggestions: ["Which crop for black soil?", "Wheat sowing time"],
+          text: language === 'hi' ? "माफ़ कीजिए, अभी अनुरोध संसाधित करने में समस्या आ रही है। कृपया सरल शब्दों में पुनः पूछें।" : language === 'mr' ? "क्षमस्व, विनंतीवर प्रक्रिया करताना अडचण येत आहे. कृपया सोप्या भाषेत पुन्हा विचारा." : "I am having difficulty processing your request right now. Please try asking again in simple words or switch language.",
+          suggestions: language === 'hi' ? ["काली मिट्टी के लिए फसल", "गेहूं बुवाई समय"] : language === 'mr' ? ["काळी मातीसाठी पीक", "गहू पेरणी वेळ"] : ["Which crop for black soil?", "Wheat sowing time"],
         },
       ]);
     } finally {
@@ -101,7 +118,7 @@ export const AIAssistantPage = () => {
 
   const toggleVoiceInput = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert("Speech recognition is not supported on this browser. Please type your question.");
+      alert(language === 'hi' ? "इस ब्राउज़र में वॉयस इनपुट समर्थित नहीं है। कृपया लिखकर पूछें।" : language === 'mr' ? "या ब्राउझरमध्ये व्हॉइस इनपुट समर्थित नाही. कृपया टाइप करा." : "Speech recognition is not supported on this browser. Please type your question.");
       return;
     }
 
@@ -136,17 +153,7 @@ export const AIAssistantPage = () => {
   };
 
   const resetChat = () => {
-    setMessages([
-      {
-        role: 'assistant',
-        text: "Conversation reset. How may I help you with your farming today?",
-        suggestions: [
-          "Which crop is suitable for black soil?",
-          "When should I sow wheat?",
-          "Why are my tomato leaves turning yellow?"
-        ]
-      }
-    ]);
+    setMessages([getInitialMessage(language)]);
     setConversationId('');
   };
 
@@ -160,13 +167,13 @@ export const AIAssistantPage = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-black text-gray-900">Kisan AI Assistant</h1>
+              <h1 className="text-xl font-black text-gray-900">{t.kisanAIAssistant || "Kisan AI Assistant"}</h1>
               <span className="px-2.5 py-0.5 rounded-full bg-forest-100 text-forest-900 text-xs font-black">
-                Online
+                {t.online || "Online"}
               </span>
             </div>
             <p className="text-xs font-semibold text-gray-700">
-              Multilingual agricultural advisor (English, हिन्दी, मराठी)
+              {t.multilingualAdvisor || "Multilingual agricultural advisor (English, हिन्दी, मराठी)"}
             </p>
           </div>
         </div>
@@ -202,7 +209,7 @@ export const AIAssistantPage = () => {
 
           <button
             onClick={resetChat}
-            title="Reset Chat"
+            title={t.resetChat || "Reset Chat"}
             className="p-2 text-gray-700 hover:text-gray-950 hover:bg-gray-200 rounded-xl transition border border-gray-200"
           >
             <RefreshCw className="w-4 h-4" />
@@ -265,7 +272,7 @@ export const AIAssistantPage = () => {
             </div>
             <div className="p-3 bg-gray-100 rounded-2xl border border-gray-200 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-forest-700 animate-spin" />
-              <span>Kisan AI is analyzing your query...</span>
+              <span>{t.analyzingQuery || "Kisan AI is analyzing your query..."}</span>
             </div>
           </div>
         )}
@@ -298,13 +305,7 @@ export const AIAssistantPage = () => {
           type="text"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
-          placeholder={
-            language === 'hi'
-              ? "फसल, खाद या कीट संबंधित प्रश्न पूछें..."
-              : language === 'mr'
-              ? "पीक, खत किंवा रोग याविषयी विचारा..."
-              : "Ask a question about crops, fertilizers, pests, or schemes..."
-          }
+          placeholder={t.typeQuestionPlaceholder || "Ask a question about crops, fertilizers, pests, or schemes..."}
           className="flex-1 px-3 py-2 text-sm font-semibold text-gray-900 placeholder:text-gray-500 focus:outline-none"
         />
 
@@ -313,7 +314,7 @@ export const AIAssistantPage = () => {
           disabled={!inputMessage.trim() || loading}
           className="px-5 py-2.5 bg-forest-700 hover:bg-forest-800 disabled:opacity-50 text-white font-black rounded-xl transition flex items-center gap-1.5 text-xs shadow-sm"
         >
-          <span>Send</span>
+          <span>{t.send || "Send"}</span>
           <Send className="w-3.5 h-3.5" />
         </button>
       </form>

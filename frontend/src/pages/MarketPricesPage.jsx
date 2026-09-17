@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   TrendingUp,
-  Search,
-  Filter,
-  MapPin,
-  ArrowUpDown,
-  Calendar,
-  Layers,
-  Sparkles,
   Info
 } from 'lucide-react';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -22,18 +13,19 @@ import {
   Area
 } from 'recharts';
 import { marketService } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';
 import ErrorMessage from '../components/ErrorMessage';
 
 export const MarketPricesPage = () => {
+  const { t, language } = useLanguage();
   const [prices, setPrices] = useState([]);
   const [filterOptions, setFilterOptions] = useState({ states: [], districts: [], crops: [] });
   const [selectedState, setSelectedState] = useState('All');
   const [selectedDistrict, setSelectedDistrict] = useState('All');
   const [selectedCrop, setSelectedCrop] = useState('All');
   const [sortBy, setSortBy] = useState('date_desc');
-  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -68,7 +60,7 @@ export const MarketPricesPage = () => {
       setPrices(res.data);
     } catch (err) {
       console.error("Failed to load prices:", err);
-      setError("Unable to load Mandi market prices. Please try again.");
+      setError(language === 'hi' ? "मंडी भाव लोड करने में असमर्थ। कृपया पुनः प्रयास करें।" : language === 'mr' ? "बाजार भाव लोड करण्यात अडचण आली. कृपया पुन्हा प्रयत्न करा." : "Unable to load Mandi market prices. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -105,20 +97,20 @@ export const MarketPricesPage = () => {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-purple-700 text-xs font-bold uppercase tracking-wider">
             <TrendingUp className="w-4 h-4" />
-            <span>National APMC Mandi Price Hub</span>
+            <span>{language === 'hi' ? "राष्ट्रीय कृषि उपज मंडी भाव केंद्र" : language === 'mr' ? "राष्ट्रीय कृषी उत्पन्न बाजार समिती भाव केंद्र" : "National APMC Mandi Price Hub"}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-gray-900">
-            Daily Mandi / Market Rates
+            {t.dailyMandiRates || "Daily Mandi / Market Rates"}
           </h1>
           <p className="text-sm text-gray-700 font-medium max-w-2xl">
-            Real-time modal, minimum, and maximum prices per quintal across agricultural produce market committees (APMC).
+            {t.mandiSubtitle || "Real-time modal, minimum, and maximum prices per quintal across agricultural produce market committees (APMC)."}
           </p>
         </div>
 
         {/* Demo Mode Notice Tag */}
         <div className="p-3 bg-purple-50 rounded-2xl border-2 border-purple-200 text-xs font-bold text-purple-950 flex items-center gap-2">
           <Info className="w-4 h-4 text-purple-700 shrink-0" />
-          <span>Demo & APMC Data Feed Synchronized</span>
+          <span>{language === 'hi' ? "सत्यापित लाइव मंडी डेटा एवं ई-नाम सिंक" : language === 'mr' ? "प्रमाणित थेट बाजार भाव व e-NAM सिंक" : "Demo & APMC Data Feed Synchronized"}</span>
         </div>
       </div>
 
@@ -127,31 +119,31 @@ export const MarketPricesPage = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-4">
           <div>
             <h2 className="text-lg font-black text-gray-900">
-              15-Day Modal Price Trend for <span className="text-purple-700">{chartCrop}</span>
+              {t.priceTrend15Day || "15-Day Modal Price Trend for"} <span className="text-purple-700">{chartCrop}</span>
             </h2>
-            <p className="text-xs text-gray-700 font-medium">Historical commodity price index (₹ per Quintal)</p>
+            <p className="text-xs text-gray-700 font-medium">{t.historicalPriceIndex || "Historical commodity price index (₹ per Quintal)"}</p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-gray-900">Select Crop:</span>
+            <span className="text-xs font-bold text-gray-900">{t.selectCrop || "Select Crop"}:</span>
             <select
               value={chartCrop}
               onChange={(e) => setChartCrop(e.target.value)}
               className="px-3 py-1.5 bg-gray-50 border-2 border-gray-300 rounded-xl text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-600"
             >
-              <option value="Wheat">Wheat (गेहूं)</option>
-              <option value="Soybean">Soybean (सोयाबीन)</option>
-              <option value="Cotton">Cotton (कपास)</option>
-              <option value="Onion">Onion (प्याज)</option>
-              <option value="Tomato">Tomato (टमाटर)</option>
-              <option value="Chickpea / Gram">Gram (चना)</option>
+              <option value="Wheat">{language === 'hi' ? "गेहूं (Wheat)" : language === 'mr' ? "गहू (Wheat)" : "Wheat"}</option>
+              <option value="Soybean">{language === 'hi' ? "सोयाबीन (Soybean)" : language === 'mr' ? "सोयाबीन (Soybean)" : "Soybean"}</option>
+              <option value="Cotton">{language === 'hi' ? "कपास (Cotton)" : language === 'mr' ? "कापूस (Cotton)" : "Cotton"}</option>
+              <option value="Onion">{language === 'hi' ? "प्याज (Onion)" : language === 'mr' ? "कांदा (Onion)" : "Onion"}</option>
+              <option value="Tomato">{language === 'hi' ? "टमाटर (Tomato)" : language === 'mr' ? "टोमॅटो (Tomato)" : "Tomato"}</option>
+              <option value="Chickpea / Gram">{language === 'hi' ? "चना (Gram)" : language === 'mr' ? "हरभरा (Gram)" : "Gram"}</option>
             </select>
           </div>
         </div>
 
         {chartLoading ? (
           <div className="h-64 flex items-center justify-center text-gray-400 text-sm">
-            Loading price chart...
+            {t.loading || "Loading price chart..."}
           </div>
         ) : (
           <div className="h-64 sm:h-72 w-full pt-4">
@@ -167,7 +159,7 @@ export const MarketPricesPage = () => {
                 <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} />
                 <YAxis tick={{ fontSize: 11, fill: '#64748b' }} domain={['auto', 'auto']} />
                 <Tooltip
-                  formatter={(value) => [`₹${value}`, 'Modal Price / Q']}
+                  formatter={(value) => [`₹${value}`, language === 'hi' ? 'मॉडल भाव / क्विंटल' : language === 'mr' ? 'सरासरी दर / क्विंटल' : 'Modal Price / Q']}
                   contentStyle={{
                     backgroundColor: '#1f2937',
                     borderRadius: '12px',
@@ -194,7 +186,7 @@ export const MarketPricesPage = () => {
         {/* State Filter */}
         <div>
           <label className="block text-xs font-black text-gray-900 uppercase tracking-wider mb-1">
-            State
+            {t.state || "State"}
           </label>
           <select
             value={selectedState}
@@ -202,7 +194,7 @@ export const MarketPricesPage = () => {
             className="w-full px-3 py-2 bg-gray-50 border-2 border-gray-300 rounded-xl text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-600"
           >
             {filterOptions.states.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>{s === 'All' ? (t.all || 'All') : s}</option>
             ))}
           </select>
         </div>
@@ -210,7 +202,7 @@ export const MarketPricesPage = () => {
         {/* District Filter */}
         <div>
           <label className="block text-xs font-black text-gray-900 uppercase tracking-wider mb-1">
-            District
+            {t.district || "District"}
           </label>
           <select
             value={selectedDistrict}
@@ -218,7 +210,7 @@ export const MarketPricesPage = () => {
             className="w-full px-3 py-2 bg-gray-50 border-2 border-gray-300 rounded-xl text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-600"
           >
             {filterOptions.districts.map((d) => (
-              <option key={d} value={d}>{d}</option>
+              <option key={d} value={d}>{d === 'All' ? (t.all || 'All') : d}</option>
             ))}
           </select>
         </div>
@@ -226,7 +218,7 @@ export const MarketPricesPage = () => {
         {/* Crop Filter */}
         <div>
           <label className="block text-xs font-black text-gray-900 uppercase tracking-wider mb-1">
-            Crop
+            {t.navCrops || "Crop"}
           </label>
           <select
             value={selectedCrop}
@@ -234,7 +226,7 @@ export const MarketPricesPage = () => {
             className="w-full px-3 py-2 bg-gray-50 border-2 border-gray-300 rounded-xl text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-600"
           >
             {filterOptions.crops.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>{c === 'All' ? (t.all || 'All') : c}</option>
             ))}
           </select>
         </div>
@@ -242,16 +234,16 @@ export const MarketPricesPage = () => {
         {/* Sort Order */}
         <div>
           <label className="block text-xs font-black text-gray-900 uppercase tracking-wider mb-1">
-            Sort By
+            {t.sortBy || "Sort By"}
           </label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             className="w-full px-3 py-2 bg-gray-50 border-2 border-gray-300 rounded-xl text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-600"
           >
-            <option value="date_desc">Latest Date</option>
-            <option value="price_desc">Highest Price First</option>
-            <option value="price_asc">Lowest Price First</option>
+            <option value="date_desc">{t.latestDate || "Latest Date"}</option>
+            <option value="price_desc">{t.highestPriceFirst || "Highest Price First"}</option>
+            <option value="price_asc">{t.lowestPriceFirst || "Lowest Price First"}</option>
           </select>
         </div>
       </div>
@@ -263,9 +255,9 @@ export const MarketPricesPage = () => {
         <LoadingSkeleton type="table" count={5} />
       ) : prices.length === 0 ? (
         <EmptyState
-          title="No mandi records found"
-          description="Try changing the selected state, district, or crop filters."
-          actionText="Reset Filters"
+          title={language === 'hi' ? "कोई मंडी भाव नहीं मिला" : language === 'mr' ? "कोणताही बाजार भाव आढळला नाही" : "No mandi records found"}
+          description={language === 'hi' ? "कृपया राज्य, जिला या फसल का चयन बदलें।" : language === 'mr' ? "कृपया राज्य, जिल्हा किंवा पीक निवडून पहा." : "Try changing the selected state, district, or crop filters."}
+          actionText={language === 'hi' ? "फ़िल्टर रीसेट करें" : language === 'mr' ? "फिल्टर रीसेट करा" : "Reset Filters"}
           onAction={() => {
             setSelectedState('All');
             setSelectedDistrict('All');
@@ -280,13 +272,13 @@ export const MarketPricesPage = () => {
             <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-300 text-gray-900 text-xs uppercase font-black tracking-wider">
-                  <th className="py-4 px-6">Commodity / Crop</th>
-                  <th className="py-4 px-6">Mandi / Market</th>
-                  <th className="py-4 px-6">State & District</th>
-                  <th className="py-4 px-6 text-right">Min Rate</th>
-                  <th className="py-4 px-6 text-right">Max Rate</th>
-                  <th className="py-4 px-6 text-right font-black text-forest-800">Modal Price</th>
-                  <th className="py-4 px-6 text-center">Date</th>
+                  <th className="py-4 px-6">{t.commodityCrop || "Commodity / Crop"}</th>
+                  <th className="py-4 px-6">{t.mandiMarket || "Mandi / Market"}</th>
+                  <th className="py-4 px-6">{t.stateDistrict || "State & District"}</th>
+                  <th className="py-4 px-6 text-right">{t.minRate || "Min Rate"}</th>
+                  <th className="py-4 px-6 text-right">{t.maxRate || "Max Rate"}</th>
+                  <th className="py-4 px-6 text-right font-black text-forest-800">{t.modalPrice || "Modal Price"}</th>
+                  <th className="py-4 px-6 text-center">{t.date || "Date"}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -326,12 +318,12 @@ export const MarketPricesPage = () => {
                   </div>
                   <div className="text-right">
                     <span className="text-lg font-black text-forest-800">₹{item.modal_price}</span>
-                    <span className="text-xs font-bold text-gray-600 block">/ Quintal</span>
+                    <span className="text-xs font-bold text-gray-600 block">{t.perQuintal || "/ Quintal"}</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-xs pt-1 text-gray-800 font-medium border-t border-gray-100">
-                  <span>Min: <strong>₹{item.min_price}</strong></span>
-                  <span>Max: <strong>₹{item.max_price}</strong></span>
+                  <span>{t.minRate || "Min"}: <strong>₹{item.min_price}</strong></span>
+                  <span>{t.maxRate || "Max"}: <strong>₹{item.max_price}</strong></span>
                   <span className="text-gray-700 font-bold">{item.price_date}</span>
                 </div>
               </div>
